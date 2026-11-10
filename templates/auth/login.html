@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                            <i class="bi bi-box-arrow-in-right text-primary fs-3"></i>
+                        </div>
+                        <h2 class="h4 fw-bold">Connexion</h2>
+                        <p class="text-muted">Connectez-vous à votre compte</p>
+                    </div>
+
+                    <form method="POST" novalidate>
+                        {{ form.csrf_token }}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Adresse email</label>
+                            {{ form.email(class_="form-control", placeholder="email@example.com") }}
+                            {% if form.email.errors %}
+                            <div class="invalid-feedback">{{ form.email.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mot de passe</label>
+                            <div class="input-group">
+                                {{ form.password(class_="form-control", placeholder="••••••••") }}
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            </div>
+                            {% if form.password.errors %}
+                            <div class="invalid-feedback">{{ form.password.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 form-check">
+                            {{ form.remember_me(class_="form-check-input") }}
+                            <label class="form-check-label" for="remember_me">Se souvenir de moi</label>
+                        </div>
+                        <div class="d-grid mb-3">
+                            {{ form.submit(class_="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center small text-muted">
+                        Pas de compte ?
+                        <a href="{{ url_for('auth.register') }}">Créer un compte</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const input = document.querySelector('input[name="password"]');
+    const icon = this.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    }
+});
+</script>
+{% endblock %}

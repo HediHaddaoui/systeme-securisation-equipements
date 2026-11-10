@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Module RFID{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-tag me-2 text-primary"></i>Module RFID</h2>
+            <p class="text-muted">Gestion des tags RFID et simulation d'événements de sécurité.</p>
+        </div>
+        {% if current_user.is_admin() %}
+        <a href="{{ url_for('rfid.add_tag') }}" class="btn btn-outline-primary">
+            <i class="bi bi-tag-plus me-2"></i>Nouveau tag
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 fw-bold text-dark">Tags RFID enregistrés</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for tag in tags %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold">{{ tag.tag_id }}</div>
+                                <div class="small text-muted">
+                                    {% if tag.equipment %}
+                                    {{ tag.equipment.name }}
+                                    {% else %}
+                                    Non assigné
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <span class="badge bg-{{ 'success' if tag.is_active else 'secondary' }}">
+                                {{ 'Actif' if tag.is_active else 'Inactif' }}
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item text-center text-muted py-3">Aucun tag RFID</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 fw-bold text-dark">Simulateur RFID</h6>
+                    <p class="text-muted mb-2 small">Simulez des détections, pertes, événements suspects et alertes de sécurité. Tous les événements sont simulés (mode démo).</p>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <select id="simTagSelect" class="form-select">
+                                <option value="">Choisir un tag</option>
+                                {% for tag in tags %}
+                                <option value="{{ tag.tag_id }}">{{ tag.tag_id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="simEquipSelect" class="form-select">
+                                <option value="">Aucun équipement</option>
+                                {% for e in equipments %}
+                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-success w-100" onclick="simulate('detect')">
+                                <i class="bi bi-signal me-2"></i>Détection
+                            </button>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-warning w-100" onclick="simulate('lost')">
+                                <i class="bi bi-slash-circle me-2"></i>Perte
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-danger w-100" onclick="simulate('suspicious')">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Suspect
+                            </button>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-dark w-100" onclick="simulate('alert')">
+                                <i class="bi bi-shield-exclamation me-2"></i>Alerte vol
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info shadow-sm">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Mode simulation :</strong> Tous les événements générés par ce simulateur sont marqués comme simulés. Ils ne proviennent pas de matériel RFID physique. Une intégration avec du matériel RFID réel peut être ajoutée ultérieurement.
+                    </div>
+
+                    <div class="mt-4">
+                        <h6>Résultat de la simulation</h6>
+                        <div id="simResult" class="p-3 bg-light rounded border"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ url_for('rfid.tags') }}" class="btn btn-outline-secondary mt-3">
+        <i class="bi bi-list me-2"></i>Voir tous les tags
+    </a>
+    <a href="{{ url_for('rfid.events') }}" class="btn btn-outline-primary mt-3">
+        <i class="bi bi-clock me-2"></i>Événements RFID
+    </a>
+</div>
+
+<script>
+function simulate(type) {
+    const tagSelect = document.getElementById('simTagSelect');
+    const equipSelect = document.getElementById('simEquipSelect');
+    const resultDiv = document.getElementById('simResult');
+
+    const payload = {};
+    if (tagSelect.value) payload.tag_id = tagSelect.value;
+    if (equipSelect.value) payload.equipment_id = parseInt(equipSelect.value);
+
+    resultDiv.innerHTML = '<div class="spinner-border text-primary" role="status"></div> Traitement...';
+
+    fetch('/rfid/simulator/' + type, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let badgeClass = 'success';
+            let icon = 'bi-check-circle';
+            if (data.event_type === 'perte') { badgeClass = 'warning'; icon = 'bi-slash-circle'; }
+            if (data.event_type === 'suspect') { badgeClass = 'danger'; icon = 'bi-exclamation-triangle'; }
+            if (data.event_type === 'alerte') { badgeClass = 'dark'; icon = 'bi-shield-exclamation'; }
+
+            resultDiv.innerHTML = `
+                <div class="alert alert-${badgeClass} mt-2">
+                    <i class="bi ${icon} me-2"></i>
+                    <strong>Événement simulé :</strong> ${data.event_type}<br>
+                    <strong>Tag :</strong> ${data.tag_id}<br>
+                    <strong>Équipement :</strong> ${data.equipment}<br>
+                    <strong>Simulé :</strong> Oui (mode démo)<br>
+                    <strong>Heure :</strong> ${data.timestamp}
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = '<div class="alert alert-danger mt-2">Erreur lors de la simulation.</div>';
+        }
+    })
+    .catch(() => {
+        resultDiv.innerHTML = '<div class="alert alert-danger mt-2">Erreur de connexion au serveur.</div>';
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-primary h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total utilisateurs</div>
+                        <div class="h5 mb-0">{{ stats.total_users }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-people font-weight-bold text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-success h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total matériels</div>
+                        <div class="h5 mb-0">{{ stats.total_equipments }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-box font-weight-bold text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-warning h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Matériels suspects</div>
+                        <div class="h5 mb-0">{{ stats.suspect_equipments }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-exclamation-triangle font-weight-bold text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-danger h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Signalés volés</div>
+                        <div class="h5 mb-0">{{ stats.vole_equipments }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-shield-exclamation font-weight-bold text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-info h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">À surveiller</div>
+                        <div class="h5 mb-0">{{ stats.a_surveiller_equipments }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-eye font-weight-bold text-info opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-secondary h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Total notifications</div>
+                        <div class="h5 mb-0">{{ stats.total_notifications }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-bell font-weight-bold text-secondary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card shadow-sm border-left-dark h-100">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Non lues</div>
+                        <div class="h5 mb-0">{{ stats.unread_notifications }}</div>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="bi bi-envelope font-weight-bold text-dark opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 fw-bold text-dark">Événements récents</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Résultat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in recent_events %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if event.result == 'alert' else 'success' }}">{{ event.event_type }}</span>
+                                </td>
+                                <td class="text-truncate" style="max-width: 200px;">{{ event.description }}</td>
+                                <td>{{ event.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>
+                                    {% if event.result == 'success' %}
+                                    <span class="badge bg-success">Succès</span>
+                                    {% elif event.result == 'alert' %}
+                                    <span class="badge bg-danger">Alerte</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Échec</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">Aucun événement récent</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 fw-bold text-dark">Nouveaux utilisateurs</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush mb-0">
+                    {% for user in recent_users %}
+                    <div class="list-group-item list-group-item-action d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">{{ user.username }}</div>
+                            <div class="small text-muted">{{ user.email }}</div>
+                            <div class="small text-{{ 'danger' if user.is_admin() else 'success' }}">
+                                <i class="bi bi-{{ 'shield-fill' if user.is_admin() else 'person' }} me-1"></i>
+                                {{ 'Administrateur' if user.is_admin() else 'Utilisateur' }}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="list-group-item text-center text-muted py-3">Aucun utilisateur récent</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 fw-bold text-dark">Répartition des matériels par statut</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-success bg-opacity-10 rounded">
+                            <div class="h3 text-success">{{ stats.normal_equipments }}</div>
+                            <div class="small text-success fw-semibold">Normal</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-warning bg-opacity-10 rounded">
+                            <div class="h3 text-warning">{{ stats.a_surveiller_equipments }}</div>
+                            <div class="small text-warning fw-semibold">À surveiller</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-danger bg-opacity-10 rounded">
+                            <div class="h3 text-danger">{{ stats.suspect_equipments }}</div>
+                            <div class="small text-danger fw-semibold">Suspect</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-dark bg-opacity-10 rounded">
+                            <div class="h3 text-dark">{{ stats.vole_equipments }}</div>
+                            <div class="small text-dark fw-semibold">Volé</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

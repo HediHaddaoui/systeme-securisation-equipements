@@ -1,0 +1,83 @@
+# Diagramme de classes
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0d6efd', 'primaryTextColor': '#fff', 'primaryBorderColor': '#0d6efd', 'lineColor': '#0d6efd', 'secondaryColor': '#f8f9fa', 'tertiaryColor': '#fff'}}}%%
+
+classDiagram
+    class User {
+        - int id
+        - string username
+        - string email
+        - string password_hash
+        - string role
+        - datetime created_at
+        + set_password(password)
+        + check_password(password)
+        + is_admin()
+    }
+
+    class Equipment {
+        - int id
+        - string name
+        - string type
+        - string serial_number
+        - string description
+        - int assigned_user_id
+        - string rfid_identifier
+        - string status
+        - datetime registration_date
+        + status_label()
+        + status_badge_class()
+    }
+
+    class RFIDTag {
+        - int id
+        - string tag_id
+        - int equipment_id
+        - bool is_active
+        - datetime created_at
+        - datetime last_detected_at
+    }
+
+    class Notification {
+        - int id
+        - int user_id
+        - string title
+        - string message
+        - string type
+        - bool is_read
+        - datetime created_at
+    }
+
+    class EventHistory {
+        - int id
+        - string event_type
+        - int equipment_id
+        - int user_id
+        - int rfid_tag_id
+        - string description
+        - string result
+        - bool simulated
+        - datetime created_at
+    }
+
+    class UserSettings {
+        - int id
+        - int user_id
+        - string language
+        - bool dark_mode
+        - bool notifications_enabled
+        - bool email_notifications
+        - string location
+        - datetime updated_at
+    }
+
+    %% Relations
+    User "1" -- "*" Equipment : assigned
+    User "1" -- "*" Notification : owns
+    User "1" -- "*" EventHistory : triggers
+    User "1" -- "1" UserSettings : has
+    Equipment "1" -- "*" RFIDTag : has
+    Equipment "1" -- "*" EventHistory : related
+    RFIDTag "1" -- "*" EventHistory : generates
+```

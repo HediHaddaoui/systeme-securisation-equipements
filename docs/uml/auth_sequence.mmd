@@ -1,0 +1,27 @@
+# Diagramme de séquence - Authentification
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0d6efd', 'primaryTextColor': '#fff', 'primaryBorderColor': '#0d6efd', 'lineColor': '#0d6efd', 'secondaryColor': '#f8f9fa', 'tertiaryColor': '#fff'}}}%%
+
+sequenceDiagram
+    participant U as Utilisateur
+    participant UI as Interface de connexion
+    participant A as Application Flask
+    participant M as Base de données SQLite
+    participant FL as Flask-Login
+
+    U->>UI: Saisir email et mot de passe
+    UI->>A: POST /auth/login
+    A->>M: SELECT user BY email
+    M-->>A: Retour utilisateur
+    A->>A: Vérifier mot de passe (hash)
+    alt Mot de passe valide
+        A->>FL: login_user(user)
+        A->>M: INSERT EventHistory (connexion)
+        A-->>UI: Redirection vers tableau de bord
+        UI-->>U: Accès autorisé
+    else Mot de passe invalide
+        A-->>UI: Afficher message d'erreur
+        UI-->>U: "Identifiants incorrects"
+    end
+```

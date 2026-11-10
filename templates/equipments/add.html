@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un matériel{% endblock %}
+
+{% block content %}
+<div class="container mt-4 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="m-0 fw-bold text-dark"><i class="bi bi-box-plus me-2 text-primary"></i>Ajouter un matériel</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" novalidate>
+                        {{ form.csrf_token }}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nom du matériel <span class="text-danger">*</span></label>
+                                {{ form.name(class_="form-control", placeholder="ex: Ordinateur portable") }}
+                                {% if form.name.errors %}
+                                <div class="invalid-feedback">{{ form.name.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Type <span class="text-danger">*</span></label>
+                                {{ form.type(class_="form-control", placeholder="ex: Informatique") }}
+                                {% if form.type.errors %}
+                                <div class="invalid-feedback">{{ form.type.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Numéro de série <span class="text-danger">*</span></label>
+                                {{ form.serial_number(class_="form-control", placeholder="ex: SN123456") }}
+                                {% if form.serial_number.errors %}
+                                <div class="invalid-feedback">{{ form.serial_number.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Description</label>
+                                {{ form.description(class_="form-control", rows="3") }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Utilisateur assigné</label>
+                                {{ form.assigned_user_id(class_="form-select") }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Identifiant RFID</label>
+                                {{ form.rfid_identifier(class_="form-control", placeholder="ex: RFID-ABC123") }}
+                                {% if form.rfid_identifier.errors %}
+                                <div class="invalid-feedback">{{ form.rfid_identifier.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Statut <span class="text-danger">*</span></label>
+                                {{ form.status(class_="form-select") }}
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('equipments.list') }}" class="btn btn-secondary">Annuler</a>
+                            {{ form.submit(class_="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

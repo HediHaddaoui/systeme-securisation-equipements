@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block content %}
+<div class="container mt-4 pt-4">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center py-4">
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random&size=256" alt="Avatar" class="rounded-circle mb-3" width="120" height="120">
+                    <h4 class="card-title">{{ user.username }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                    <span class="badge bg-{{ 'danger' if user.is_admin() else 'success' }} fs-6">
+                        {{ 'Administrateur' if user.is_admin() else 'Utilisateur' }}
+                    </span>
+                </div>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <i class="bi bi-calendar me-2 text-primary"></i>Membre depuis : {{ user.created_at.strftime('%d/%m/%Y') }}
+                    </div>
+                    <div class="list-group-item">
+                        <i class="bi bi-person-badge me-2 text-primary"></i>ID utilisateur : {{ user.id }}
+                    </div>
+                </div>
+            </div>
+            <a href="{{ url_for('profile.edit') }}" class="btn btn-primary w-100"><i class="bi bi-pencil me-2"></i>Modifier le profil</a>
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="m-0 fw-bold text-dark">Informations du compte</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 35%;">Nom d'utilisateur:</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rôle:</th>
+                            <td><span class="badge bg-{{ 'danger' if user.is_admin() else 'success' }}">{{ 'Administrateur' if user.is_admin() else 'Utilisateur' }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>Date de création:</th>
+                            <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

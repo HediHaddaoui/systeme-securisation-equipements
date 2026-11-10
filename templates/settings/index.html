@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Paramètres{% endblock %}
+
+{% block content %}
+<div class="container mt-4 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="m-0 fw-bold text-dark"><i class="bi bi-gear me-2 text-primary"></i>Paramètres du compte</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings.update') }}" novalidate>
+                        <div class="mb-4">
+                            <h6 class="fw-semibold">Préférences de compte</h6>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Langue</label>
+                                <select name="language" class="form-select">
+                                    <option value="fr" {% if settings.language == 'fr' %}selected{% endif %}>Français</option>
+                                    <option value="en" {% if settings.language == 'en' %}selected{% endif %}>Anglais</option>
+                                </select>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="dark_mode" id="dark_mode" {% if settings.dark_mode %}checked{% endif %}>
+                                <label class="form-check-label" for="dark_mode">Mode sombre</label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Lieu / Site</label>
+                                <input type="text" name="location" class="form-control" placeholder="ex: Siège social, bâtiment A" value="{{ settings.location or '' }}">
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-4">
+                            <h6 class="fw-semibold">Préférences de notification</h6>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="notifications_enabled" id="notifications_enabled" {% if settings.notifications_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="notifications_enabled">Activer les notifications</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="email_notifications" id="email_notifications" {% if settings.email_notifications %}checked{% endif %}>
+                                <label class="form-check-label" for="email_notifications">Notifications par email</label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('profile.index') }}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Enregistrer les paramètres</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

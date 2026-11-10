@@ -1,0 +1,31 @@
+# Diagramme de séquence - Ajout d'utilisateur
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0d6efd', 'primaryTextColor': '#fff', 'primaryBorderColor': '#0d6efd', 'lineColor': '#0d6efd', 'secondaryColor': '#f8f9fa', 'tertiaryColor': '#fff'}}}%%
+
+sequenceDiagram
+    participant Admin as Administrateur
+    participant Form as Formulaire d'ajout
+    participant A as Application Flask
+    participant M as Base de données SQLite
+    participant FW as Flask-WTF
+
+    Admin->>Form: Remplir username, email, password, role
+    Admin->>Form: Cliquer "Enregistrer"
+    Form->>A: POST /admin/users/add (avec CSRF token)
+    A->>FW: Valider CSRF token
+    FW-->>A: Token valide
+    A->>A: Valider données (WTForms)
+    alt Validation échoue
+        A-->>Form: Re-afficher avec erreurs
+        Form-->>Admin: Messages d'erreur
+    else Validation réussie
+        A->>M: SELECT user WHERE email OR username
+        M-->>A: Aucun doublon
+        A->>M: INSERT User (password hashé)
+        A->>M: INSERT UserSettings
+        A->>M: INSERT EventHistory (user_created)
+        A-->>Form: Redirection vers liste
+        Form-->>Admin: Succès
+    end
+```

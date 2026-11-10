@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Historique des événements{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-clock-history me-2 text-primary"></i>Historique des événements</h2>
+            <p class="text-muted">Consultez l'historique complet des événements du système.</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label visually-hidden">Recherche</label>
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher dans la description..." value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label visually-hidden">Type d'événement</label>
+                    <select name="event_type" class="form-select">
+                        <option value="">Tous les types</option>
+                        {% for et in event_types %}
+                        <option value="{{ et }}" {% if event_type_filter == et %}selected{% endif %}>{{ et }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label visually-hidden">Résultat</label>
+                    <select name="result" class="form-select">
+                        <option value="">Tous les résultats</option>
+                        <option value="success" {% if result_filter == 'success' %}selected{% endif %}>Succès</option>
+                        <option value="failure" {% if result_filter == 'failure' %}selected{% endif %}>Échec</option>
+                        <option value="alert" {% if result_filter == 'alert' %}selected{% endif %}>Alerte</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label visually-hidden">Simulé</label>
+                    <select name="simulated" class="form-select">
+                        <option value="">Tous</option>
+                        <option value="true" {% if simulated_filter == 'true' %}selected{% endif %}>Simulés</option>
+                        <option value="false" {% if simulated_filter == 'false' %}selected{% endif %}>Réels</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-2"></i>Filtrer</button>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    {% if search or event_type_filter or result_filter or simulated_filter %}
+                    <a href="{{ url_for('events.history') }}" class="btn btn-outline-secondary w-100"><i class="bi bi-x-circle me-2"></i></a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Type d'événement</th>
+                            <th>Équipement</th>
+                            <th>Utilisateur</th>
+                            <th>Description</th>
+                            <th>Date et heure</th>
+                            <th>Résultat</th>
+                            <th>Simulé</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.id }}</td>
+                            <td><span class="badge bg-{{ 'danger' if event.result == 'alert' else 'info' }}">{{ event.event_type }}</span></td>
+                            <td>{{ event.equipment.name if event.equipment else '-' }}</td>
+                            <td>{{ event.user.username if event.user else 'Système' }}</td>
+                            <td class="text-truncate" style="max-width: 250px;">{{ event.description }}</td>
+                            <td>{{ event.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                            <td>
+                                {% if event.result == 'success' %}
+                                <span class="badge bg-success">Succès</span>
+                                {% elif event.result == 'alert' %}
+                                <span class="badge bg-danger">Alerte</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Échec</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'warning text-dark' if event.simulated else 'secondary' }}">
+                                    {{ 'Oui' if event.simulated else 'Non' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">Aucun événement trouvé</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

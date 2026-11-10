@@ -1,0 +1,37 @@
+# Diagramme de séquence - Gestion des utilisateurs
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0d6efd', 'primaryTextColor': '#fff', 'primaryBorderColor': '#0d6efd', 'lineColor': '#0d6efd', 'secondaryColor': '#f8f9fa', 'tertiaryColor': '#fff'}}}%%
+
+sequenceDiagram
+    participant Admin as Administrateur
+    participant UI as Interface utilisateurs
+    participant A as Application Flask
+    participant M as Base de données SQLite
+
+    Admin->>UI: Accéder à /admin/users
+    UI->>A: GET /admin/users
+    A->>M: SELECT all users
+    M-->>A: Liste utilisateurs
+    A-->>UI: Rendu template
+    UI-->>U: Afficher liste
+
+    Admin->>UI: Cliquer "Ajouter"
+    UI->>A: GET /admin/users/add
+    A-->>UI: Formulaire d'ajout
+    UI-->>Admin: Afficher formulaire
+
+    Admin->>UI: Remplir et soumettre
+    UI->>A: POST /admin/users/add
+    A->>M: Vérifier unicité email/username
+    M-->>A: Résultat vérification
+    alt Existe déjà
+        A-->>UI: Message d'erreur
+        UI-->>Admin: "Email ou username existe"
+    else Nouveau
+        A->>M: INSERT user + settings
+        A->>M: INSERT EventHistory (création)
+        A-->>UI: Redirection liste
+        UI-->>Admin: Utilisateur ajouté
+    end
+```

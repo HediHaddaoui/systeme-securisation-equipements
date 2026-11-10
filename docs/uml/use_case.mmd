@@ -1,0 +1,104 @@
+# Diagramme de cas d'utilisation global
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0d6efd', 'primaryTextColor': '#fff', 'primaryBorderColor': '#0d6efd', 'lineColor': '#0d6efd', 'secondaryColor': '#f8f9fa', 'tertiaryColor': '#fff'}}}%%
+
+usecaseDiagram
+    actor Admin as "Administrateur"
+    actor User as "Utilisateur"
+    actor System as "Système"
+
+    package "Authentification" {
+        usecase UC1 as "Connexion"
+        usecase UC2 as "Déconnexion"
+        usecase UC3 as "Enregistrement admin"
+        usecase UC4 as "Gestion du profil"
+    }
+
+    package "Gestion des utilisateurs" {
+        usecase UC5 as "Ajouter un utilisateur"
+        usecase UC6 as "Modifier un utilisateur"
+        usecase UC7 as "Supprimer un utilisateur"
+        usecase UC8 as "Rechercher un utilisateur"
+    }
+
+    package "Gestion des matériels" {
+        usecase UC9 as "Ajouter un matériel"
+        usecase UC10 as "Modifier un matériel"
+        usecase UC11 as "Supprimer un matériel"
+        usecase UC12 as "Voir détails matériel"
+        usecase UC13 as "Rechercher matériel"
+    }
+
+    package "Module RFID" {
+        usecase UC14 as "Enregistrer tag RFID"
+        usecase UC15 as "Associer tag à matériel"
+        usecase UC16 as "Simuler détection RFID"
+        usecase UC17 as "Simuler perte tag"
+        usecase UC18 as "Détecter événement suspect"
+        usecase UC19 as "Déclencher alerte sécurité"
+    }
+
+    package "Notifications" {
+        usecase UC20 as "Voir notifications"
+        usecase UC21 as "Marquer comme lue"
+        usecase UC22 as "Compteur non lues"
+    }
+
+    package "Historique des événements" {
+        usecase UC23 as "Consulter historique"
+        usecase UC24 as "Filtrer événements"
+    }
+
+    package "Paramètres" {
+        usecase UC25 as "Configurer préférences"
+        usecase UC26 as "Mode sombre/clair"
+        usecase UC27 as "Sélection langue"
+    }
+
+    %% Admin rights
+    Admin --> UC1 : utiliser
+    Admin --> UC2 : utiliser
+    Admin --> UC3 : exécuter
+    Admin --> UC4 : utiliser
+    Admin --> UC5 : exécuter
+    Admin --> UC6 : exécuter
+    Admin --> UC7 : exécuter
+    Admin --> UC8 : exécuter
+    Admin --> UC9 : exécuter
+    Admin --> UC10 : exécuter
+    Admin --> UC11 : exécuter
+    Admin --> UC12 : utiliser
+    Admin --> UC13 : utiliser
+    Admin --> UC14 : exécuter
+    Admin --> UC15 : exécuter
+    Admin --> UC16 : exécuter
+    Admin --> UC17 : exécuter
+    Admin --> UC18 : exécuter
+    Admin --> UC19 : exécuter
+    Admin --> UC20 : utiliser
+    Admin --> UC21 : utiliser
+    Admin --> UC22 : voir
+    Admin --> UC23 : utiliser
+    Admin --> UC24 : utiliser
+    Admin --> UC25 : configurer
+    Admin --> UC26 : activer
+    Admin --> UC27 : sélectionner
+
+    %% User rights
+    User --> UC1 : utiliser
+    User --> UC2 : utiliser
+    User --> UC4 : utiliser
+    User --> UC20 : utiliser
+    User --> UC21 : utiliser
+    User --> UC22 : voir
+    User --> UC23 : utiliser
+    User --> UC25 : configurer
+    User --> UC26 : activer
+    User --> UC27 : sélectionner
+
+    %% System relationships
+    System ..> UC18 : génère
+    System ..> UC19 : génère
+    System ..> UC22 : met à jour
+```
