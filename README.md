@@ -191,8 +191,4 @@ Disponibles dans `docs/uml/` au format Mermaid :
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
----
 
-## 👨‍💻 Auteur
-
-Développé avec OpenCode — Assistant de développement autonome.
