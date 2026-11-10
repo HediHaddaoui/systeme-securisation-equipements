@@ -195,4 +195,4 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ## 👨‍💻 Auteur
 
-Développé avec OpenCode — Assistant de développement autonome.
+Développé par Hedi Haddaoui.
